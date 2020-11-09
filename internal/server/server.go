@@ -178,8 +178,8 @@ func (s *Server) runScript(ctx echo.Context) error {
 				http.StatusInternalServerError,
 			)
 		}
-		start := []byte(`{ "data": `)
-		end := []byte(`,"debug": { "ip": "` + ip + `", "ferret": "` + s.settings.FerretVersion + `", "worker": "` + s.settings.Version + `"}}`)
+		start := []byte(`{"data": `)
+		end := []byte(`,"debug":{ "ip":"` + ip + `","ferret":"` + s.settings.FerretVersion + `","worker":"` + s.settings.Version + `"}}`)
 		out.Raw = append(start, out.Raw...)
 		out.Raw = append(out.Raw, end...)
 		return ctx.JSONBlob(http.StatusOK, out.Raw)
