@@ -30,4 +30,13 @@ type (
 		Chrome ChromeVersion `json:"chrome"`
 		Ferret string        `json:"ferret"`
 	}
+
+	Ip struct {
+		Ip string            `json:"ip"`
+	}
+
+	Debug struct {
+		Raw []byte
+		Ip string            `json:"ip"`
+	}
 )
