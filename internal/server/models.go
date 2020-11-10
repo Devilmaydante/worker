@@ -32,11 +32,11 @@ type (
 	}
 
 	Ip struct {
-		Ip string            `json:"ip"`
+		Ip string `json:"ip"`
 	}
 
 	Debug struct {
 		Raw []byte
-		Ip string            `json:"ip"`
+		Ip  string `json:"ip"`
 	}
 )
