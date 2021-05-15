@@ -1,29 +1,33 @@
-FROM golang:alpine AS builder
+# GO Builder
+###############
+FROM golang:alpine AS goBuilder
 
-# Install git.
-# Git is required for fetching the dependencies.
-# Make is requiered for build.
 RUN apk update && apk add --no-cache git make ca-certificates
-
 WORKDIR /go/src/github.com/MontFerret/worker
-
 COPY . .
 
-# Build the binary.
 RUN CGO_ENABLED=0 GOOS=linux make compile
 
-# Build the final container. And install
-FROM montferret/chromium:91.0.4469.0 as runner
+# MITM Builder
+###############
+FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
+# Runner
+###############
+FROM montferret/chromium:91.0.4469.0 as runner
 RUN apt-get update && apt-get install -y dumb-init
 
-# Add in certs
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.c
+# mitm
+RUN apt-get update && apt-get install --no-install-recommends -y python3.8 python3-pip python3.8-dev
+RUN pip install mitmproxy bs4 lxml
+COPY --from=mitmBuilder bundle.js /
+COPY --from=mitmBuilder inject.py /
 
-# Add worker binary
-COPY --from=builder /go/src/github.com/MontFerret/worker/bin/worker .
+# worker
+COPY --from=goBuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.c
+COPY --from=goBuilder /go/src/github.com/MontFerret/worker/bin/worker .
 
 EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/sh", "-c", "./entrypoint.sh & ./worker"]
+CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
