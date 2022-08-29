@@ -14,7 +14,7 @@ FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
 # Runner
 ###############
-FROM montferret/chromium:91.0.4469.0 as runner
+FROM montferret/chromium:99.0.4844.0 as runner
 RUN apt-get update && apt-get install -y dumb-init
 
 # mitm
