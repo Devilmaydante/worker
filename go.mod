@@ -44,3 +44,5 @@ require (
 )
 
 replace github.com/MontFerret/ferret v0.16.6 => github.com/MontFerret/ferret v0.15.0
+
+replace github.com/wI2L/jettison v0.7.3 => github.com/wI2L/jettison v0.7.1
