@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"github.com/MontFerret/worker/pkg/worker"
-	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
+	"io"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+
+	"github.com/MontFerret/worker/pkg/worker"
 )
 
 type (
@@ -17,14 +19,8 @@ type (
 	}
 )
 
-func NewWorker(settings worker.CDPSettings) (*Worker, error) {
-	w, err := worker.New(worker.WithCustomCDP(settings))
-
-	if err != nil {
-		return nil, errors.Wrap(err, "create a worker instance")
-	}
-
-	return &Worker{w}, nil
+func NewWorker(worker *worker.Worker) (*Worker, error) {
+	return &Worker{worker}, nil
 }
 
 func (c *Worker) Use(e *echo.Echo) {
@@ -36,7 +32,14 @@ func (c *Worker) runScript(ctx echo.Context) error {
 	err := ctx.Bind(&body)
 
 	if err != nil {
-		ctx.Logger().Error("Failed to parse body", err)
+		var rawBodyContent string
+		rawBody, rawErr := io.ReadAll(ctx.Request().Body)
+
+		if rawErr == nil {
+			rawBodyContent = string(rawBody)
+		}
+
+		ctx.Logger().Errorf("Failed to parse body: %s: %s", rawBodyContent, err)
 
 		return ctx.JSON(
 			http.StatusBadRequest,
@@ -44,9 +47,13 @@ func (c *Worker) runScript(ctx echo.Context) error {
 		)
 	}
 
+	ctx.Logger().Debugf("Received query to execute: %s", body.Query.Text)
+
 	out, err := c.worker.DoQuery(ctx.Request().Context(), body.Query)
 
 	if err != nil {
+		ctx.Logger().Errorf("Failed to execute query: %s: %s", body.Query.Text, err)
+
 		return ctx.JSON(
 			http.StatusBadRequest,
 			HttpError{err.Error()},

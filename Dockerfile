@@ -6,7 +6,7 @@ RUN apk update && apk add --no-cache git make ca-certificates
 WORKDIR /go/src/github.com/MontFerret/worker
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux make compile
+RUN CGO_ENABLED=0 GOOS=linux FERRET_VERSION=0.16.5 make compile
 
 # MITM Builder
 ###############
@@ -14,7 +14,7 @@ FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
 # Runner
 ###############
-FROM montferret/chromium:91.0.4469.0 as runner
+FROM montferret/chromium:99.0.4844.0 as runner
 RUN apt-get update && apt-get install -y dumb-init
 
 # mitm
