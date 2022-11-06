@@ -19,6 +19,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xpath v1.2.0 // indirect
+	github.com/antlr/antlr4 v0.0.0-20200417160354-8c50731894e0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20211211185417-43fb4c2dbe28 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/corpix/uarand v0.1.1 // indirect
