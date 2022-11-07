@@ -6,7 +6,7 @@ RUN apk update && apk add --no-cache git make ca-certificates
 WORKDIR /go/src/github.com/MontFerret/worker
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux FERRET_VERSION=0.15.0 make compile
+RUN CGO_ENABLED=0 GOOS=linux make compile
 
 # MITM Builder
 ###############
