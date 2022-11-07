@@ -43,6 +43,4 @@ require (
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 )
 
-replace github.com/MontFerret/ferret v0.16.6 => github.com/MontFerret/ferret v0.16.7
-
 replace github.com/wI2L/jettison v0.7.3 => github.com/wI2L/jettison v0.7.4
