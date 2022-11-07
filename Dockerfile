@@ -35,4 +35,4 @@ ENTRYPOINT ["dumb-init", "--"]
 #CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
 #Uncomment the next line and comment the last if you want a randomuseragent for each requests
 #CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py -s addons/useragent-param.py --set randomuseragent true & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
-CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py -s addons/useragent-param.py & CHROME_OPTS='--lang=fr-FR --proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
+CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py -s addons/useragent-param.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
