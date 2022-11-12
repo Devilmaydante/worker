@@ -10,6 +10,7 @@ RUN CGO_ENABLED=0 GOOS=linux make compile
 
 # MITM Builder
 ###############
+ # FROM devilmaydante/mitmheadless:latest AS mitmBuilder
 FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
 # Runner
@@ -23,6 +24,7 @@ RUN pip install mitmproxy bs4 pyyaml lxml ua-parser user-agents fake-useragent
 RUN pip install pyyaml==5.4.1
 COPY --from=mitmBuilder bundle.js /
 COPY --from=mitmBuilder inject.py /
+COPY --from=mitmBuilder fake_useragent.json /
 COPY --from=mitmBuilder addons/useragent-param.py addons/useragent-param.py
 
 # worker
