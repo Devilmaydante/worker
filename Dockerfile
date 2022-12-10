@@ -1,6 +1,4 @@
-# GO Builder
-###############
-FROM golang:alpine AS goBuilder
+FROM golang:1.19-alpine AS goBuilder
 
 RUN apk update && apk add --no-cache git make ca-certificates
 WORKDIR /go/src/github.com/MontFerret/worker
@@ -15,7 +13,7 @@ FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
 # Runner
 ###############
-FROM montferret/chromium:99.0.4844.0 as runner
+FROM montferret/chromium:106.0.5249.0 as runner
 RUN apt-get update && apt-get install -y dumb-init
 
 # mitm

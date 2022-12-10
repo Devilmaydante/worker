@@ -122,3 +122,4 @@ app/tests/coverage/
 .idea/
 coverage/
 .coveralls.yml
+.private
