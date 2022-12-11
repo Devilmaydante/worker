@@ -32,6 +32,6 @@ COPY --from=goBuilder /go/src/github.com/MontFerret/worker/bin/worker .
 # launch mitm & chrome & worker
 EXPOSE 8080
 ENTRYPOINT ["dumb-init", "--"]
-# CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
+CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
 # CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py -s addons/useragent-param.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
-CMD ["/bin/sh", "-c", "./entrypoint.sh & ./worker"]
+# CMD ["/bin/sh", "-c", "./entrypoint.sh & ./worker"]
