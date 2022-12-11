@@ -18,12 +18,9 @@ RUN apt-get update && apt-get install -y dumb-init
 
 # mitm
 RUN apt-get update && apt-get install --no-install-recommends -y python3.8 python3-pip python3.8-dev
-RUN pip install mitmproxy bs4 pyyaml lxml ua-parser user-agents fake-useragent
-RUN pip install pyyaml==5.4.1
+RUN pip install mitmproxy bs4
 COPY --from=mitmBuilder bundle.js /
 COPY --from=mitmBuilder inject.py /
-COPY --from=mitmBuilder fake_useragent.json /
-COPY --from=mitmBuilder addons/useragent-param.py addons/useragent-param.py
 
 # worker
 COPY --from=goBuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.c
