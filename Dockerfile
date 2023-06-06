@@ -8,6 +8,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux make compile
 
 
+
 # Étape 2 : Import a headful chromium image
 FROM devilmaydante/chromium:latest
 
