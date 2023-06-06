@@ -1,29 +1,50 @@
-FROM golang:1.19-alpine AS goBuilder
+# Étape 1 : Construire le binaire Go
+FROM golang:1.19 AS goBuilder
 
-RUN apk update && apk add --no-cache git make ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends git make ca-certificates
 WORKDIR /go/src/github.com/MontFerret/worker
 COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux make compile
 
-# MITM Builder
-###############
-FROM devilmaydante/mitmheadless:latest AS mitmBuilder
-#FROM pierrebrisorgueil/mitm:latest AS mitmBuilder
 
-# Runner
-###############
-FROM montferret/chromium:106.0.5249.0 as runner
-RUN apt-get update && apt-get install -y dumb-init
 
-# mitm
-RUN apt-get update && apt-get install --no-install-recommends -y python3.8 python3-pip python3.8-dev
-RUN pip install mitmproxy bs4
-COPY --from=mitmBuilder bundle.js /
-COPY --from=mitmBuilder inject.py /
-#COPY --from=mitmBuilder fake_useragent.json /
-#COPY --from=mitmBuilder addons/useragent-param.py addons/useragent-param.py
+# Étape 2 : Import a headful chromium image
+FROM devilmaydante/chromium:latest
 
+ENV DEBIAN_FRONTEND=noninteractive
+# Installez les dépendances nécessaires pour le rendu graphique avec Chrome headful
+RUN apt-get update && apt-get install -y xvfb dumb-init \
+    xserver-xorg \
+    x11-xserver-utils \
+    xinit \
+    x11-utils \
+    dbus-x11 \
+    pulseaudio \
+    fonts-noto-color-emoji \
+    libxtst6 \
+    libnss3 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxi6 \
+    libxtst6 \
+    libxrandr2 \
+    libxss1 \
+    libxtst6 \
+    libgbm-dev \
+    libpangocairo-1.0-0
+
+
+# Définir les variables d'environnement pour le rendu X11
+ENV DISPLAY=:99
+
+# Copiez le binaire Go depuis l'étape précédente
+COPY --from=goBuilder /go/src/github.com/MontFerret/worker/bin/worker .
 
 # worker
 COPY --from=goBuilder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.c
@@ -32,6 +53,8 @@ COPY --from=goBuilder /go/src/github.com/MontFerret/worker/bin/worker .
 # launch mitm & chrome & worker
 EXPOSE 8080
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
+# CMD ["/bin/sh", "-c", "xvfb-run --server-args='-screen 0 1024x768x24' mitmdump -p 8081 -s inject.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
 # CMD ["/bin/sh", "-c", "mitmdump -p 8081 -s inject.py -s addons/useragent-param.py & CHROME_OPTS='--proxy-server=127.0.0.1:8081' ./entrypoint.sh & ./worker"]
-# CMD ["/bin/sh", "-c", "./entrypoint.sh & ./worker"]
+CMD ["/bin/sh", "-c", "xvfb-run --server-args='-screen 0 1024x768x24' ./entrypoint.sh & ./worker"]
+# CMD ["xvfb-run", "--server-args='-screen 0 1024x768x24'", "./worker"]
+
